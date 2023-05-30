@@ -1,2 +1,1 @@
-- beautiful and alluring photorealistic blue skinned female genie giving magical light set in mythical fantasy realm
-- magical genie woman bestowing the gift of light. Incredible detail with studio quality lighting and photorealistic
+
