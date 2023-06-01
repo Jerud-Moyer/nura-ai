@@ -2,11 +2,12 @@
 import Image, { StaticImageData } from 'next/image'
 import { Inter } from 'next/font/google'
 import { Button, Tab, Tabs, TextField } from '@mui/material'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useInterval } from '@/hooks/useInterval'
 
 const inter = Inter({ subsets: ['latin'] })
 
-type MultiImageResponseItem = {
+type Wisdom = {
   [k: string]: string
 }
 
@@ -23,7 +24,37 @@ export default function Home() {
   const [reply, setReply] = useState<string>()
   const [imageSource, setImageSource] = useState<string | null>()
   const [wishType, setWishType] = useState<number>(0)
-  const [multiImageSources, setMultiImageSources] = useState<MultiImageResponseItem[] | null>()
+  const [wisdom, setWisdom] = useState<Wisdom>({
+    wisdom: '',
+    imagery: ''
+  })
+  const [loading, setLoading] = useState<boolean>(false)
+  const [welcome, setWelcome] = useState<boolean>(true)
+  const [multiImageSources, setMultiImageSources] = useState<Wisdom[] | null>()
+  const [blinkOut, setBlinkout] = useState<boolean>(false)
+  const [backgroundSize, setBackgroundSize] = useState<number>(100)
+
+  useEffect(() => {
+    setTimeout(() => {
+      setBlinkout(true)
+    }, 2000)
+    setTimeout(() => {
+      setWelcome(false)
+      setBlinkout(false)
+    }, 2500)
+  }, [])
+
+  const manageLoadingBlinkOut = () => {
+    setBlinkout(true)
+    setTimeout(() => {
+      setLoading(false)
+      setBlinkout(false)
+    }, 500)
+  }
+
+  const showMagicWindow: boolean = welcome || loading
+
+  const magicBackground = '' // todo set this up
 
   const handlePromptChange = (e:React.ChangeEvent<HTMLInputElement>): void => {
     setPrompt(e.target.value)
@@ -39,7 +70,14 @@ export default function Home() {
     2: 'Multi Images'
   }
 
+  useInterval(() => {
+    console.log('counter => ', backgroundSize)
+    setBackgroundSize(backgroundSize + .3)
+  }, loading || welcome ? 100 : 0)
+
   const handleChatSubmit = (): void => {
+    setBackgroundSize(100)
+    setLoading(true)
     fetch(`/api/chat-request/${prompt}`)
       .then(res => {
         if(res.ok) {
@@ -47,6 +85,7 @@ export default function Home() {
             .then(res => {
               console.log('res after calling JSON ', res)
               setReply(res.choices[0].text)
+              manageLoadingBlinkOut()
             })
         } else {
           console.log('why the error? ', res)
@@ -54,6 +93,8 @@ export default function Home() {
       })
   }
   const handleImageSubmit = () => {
+    setBackgroundSize(100)
+    setLoading(true)
     fetch(`/api/image-request/${prompt}`)
       .then(res => {
         if(res.ok) {
@@ -65,6 +106,7 @@ export default function Home() {
               } else {
                 setImageSource(res.data[0].url)
               }
+              manageLoadingBlinkOut()
             })
         } else {
           console.log('why the error? ', res)
@@ -97,10 +139,10 @@ export default function Home() {
 
   return (
     <main
-      className={`flex min-h-screen flex-col items-center p-24 bg-gray-900 ${inter.className}`}
+      className={`flex min-h-screen flex-col items-center p-24 bg-gray-900 relative ${inter.className}`}
     >
       <div className='mb-36 flex flex-col items-center'>
-        <p className='text-6xl text-gray-200 text-center mb-12'>
+        <p className='text-6xl text-blaze text-center mb-12'>
           NURA
         </p>
         <p className='text-center text-gray-200 mb-3'>
@@ -133,34 +175,60 @@ export default function Home() {
           </Button>
         </div>
       </div>
-      <div 
-        className='flex flex-col items-center border-2'
-      >
-        {/* <TextField
-          label='Enter Wish'
-          multiline
-          variant='outlined'
-          rows={6}
-          onChange={handlePromptChange}
-        /> */}
-        <p className='text-gray-300'>{reply}</p>
-        {/* <Button
-          variant='outlined'
-          onClick={() => handleSubmit()}
+
+       
+      {showMagicWindow &&
+      <>
+        <div 
+          className={
+            `w-[760px] h-[760px] absolute z-10 rounded-3xl top-[200px]
+            ${blinkOut ? 'animate-blink_out' : ''}
+          `}
+          style={{
+            transition: 'background-size .2s linear, background .1s linear',
+            background: `url('/nura-headshot.png')`,
+            backgroundSize: `${backgroundSize}%`,
+            backgroundPosition: 'center'
+          }}
         >
-          {wishTypes[wishType]}
-        </Button> */}
-        {imageSource &&
-          <div className='w-[800px]'>
-            <img 
-              src={imageSource} 
-              alt='AI image' 
-              width='800'
-              height='800'
-            />
-          </div>
-        }
-      </div>
+        </div>
+        <div className={`
+          absolute top-[50%]
+          ${blinkOut ? 'animate-flare_x' : ''}
+        `}>
+        </div>
+        <div className={`
+          absolute top-[40%]
+          ${blinkOut ? 'animate-flare_y' : ''}
+        `}>
+        </div>
+      </>
+      }
+
+      
+        {/* <div 
+          className='flex flex-col absolute w-[1024px] h-[1024px] items-center z-10'
+          style={{
+            background: `${magicBackground}`
+          }}
+        > */}
+        <div>
+          {reply &&
+            <p className='text-gray-300'>{reply}</p>
+          }
+          
+          {imageSource &&
+            <div className='w-[800px]'>
+              <img 
+                src={imageSource} 
+                alt='AI image' 
+                width='800'
+                height='800'
+              />
+            </div>
+          }
+        </div>
+      
       {multiImageSources &&
         <div>
           {multiImages}
