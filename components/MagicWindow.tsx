@@ -22,6 +22,7 @@ interface Props {
   wisdom: string,
   imageryUrl: string,
   chatMessages: ChatRequestMessage[],
+  prompt: string,
   handleCloseWindow: () => void,
   handleSubmit: () => void,
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -37,22 +38,12 @@ export default function MagicWindow(props: Props) {
     wisdom,
     imageryUrl,
     chatMessages,
+    prompt,
     handleCloseWindow,
     handleSubmit,
     handleChange
   } = props
   const chatScrollRef = useRef<HTMLDivElement | null>(null)
-
-  // let assistantChatContent = {}
-
-  // useEffect(() => {
-  //   chatMessages.forEach((message, i) => {
-  //     if(message.role === 'assistant') {
-  //       assistantChatContent[i] = message.content
-  //     }
-  //   })
-
-  // }, [chatMessages])
 
   useEffect(() => {
     if(chatScrollRef.current) {
@@ -60,10 +51,12 @@ export default function MagicWindow(props: Props) {
     }
   }, [chatMessages, loading])
 
-  const chatBubbles = chatMessages?.map((message, i) => {
+  const buildABubble = (
+    message: ChatRequestMessage,
+    i: number = 0
+  ) => {
     const { content, role } = message
     const isUser = role === 'user'
-    // const markDownContent = useRemarkSync(content)
 
     const ChatBubble = styled(Paper)(({ theme }) => ({
       backgroundColor: isUser ? '#21a5d9' : '#d66b02',
@@ -74,7 +67,7 @@ export default function MagicWindow(props: Props) {
       alignSelf: isUser ? 'end' : 'start',
       overflowX: 'auto'
     }))
-    
+
     if(role !== 'system') {
       return (
         <ChatBubble key={`${i}-${role}`}>
@@ -84,7 +77,11 @@ export default function MagicWindow(props: Props) {
         </ChatBubble>
       )
     }
-  })
+  }
+
+  const chatBubbles = chatMessages?.map((message, i) => (
+    buildABubble(message, i)
+  ))
 
 
   return (
@@ -120,6 +117,12 @@ export default function MagicWindow(props: Props) {
                   }}
                 >
                   {chatBubbles}
+                  {loading &&
+                    buildABubble({
+                      role: 'user',
+                      content: prompt
+                    })
+                  }
                 </Stack>
                 {loading && 
                   <div className="w-[85px] h-[40px] bg-blaze flex flex-row items-center space-around rounded-3xl mt-6">
@@ -154,16 +157,6 @@ export default function MagicWindow(props: Props) {
 
       </div>
     } 
-      <div className={`
-        absolute top-[50%]
-        ${blinkOut ? 'animate-flare_x' : ''}
-      `}>
-      </div>
-      <div className={`
-        absolute top-[40%]
-        ${blinkOut ? 'animate-flare_y' : ''}
-      `}>
-      </div>
     </div>
   )
 }

@@ -5,7 +5,6 @@ import { Button, Tab, Tabs, TextField, Stack, Paper } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useInterval } from '@/hooks/useInterval'
 import { ChatCompletionRequestMessage } from 'openai'
-// import styled from '@emotion/styled'
 import { styled } from "@mui/material/styles";
 import { ChatRequestMessage } from '@/types'
 import MagicWindow from '@/components/MagicWindow'
@@ -113,14 +112,11 @@ export default function Home() {
         }
       })
   }
+
   
   const handleChatSubmit = (): void => {  
     const newMessage = {role: 'user', content: prompt}
     const messages = [...chatMessages, newMessage]
-    // setChatMessages(messages)
-    console.log('new messages => ', messages)
-    console.log('messages before fetch => ', chatMessages)
-    // setBackgroundSize(100)
     setLoading(true)
     fetch(`/api/chat-request/`, {
       method: 'POST',
@@ -133,14 +129,11 @@ export default function Home() {
         if(res.ok) {
           res.json()
             .then(res => {
-              console.log('res after calling JSON ', res)
-              console.log('mesages after fetch => ', chatMessages)
               setChatMessages([
                 ...chatMessages,
                 newMessage,
                 res.choices[0].message as ChatCompletionRequestMessage
               ])
-              // manageBlinkOut()
             })
             .finally(() => {
               setHasContent(true)
@@ -184,40 +177,6 @@ export default function Home() {
       />
     </div>
   ))
-
-  // const NuraBubble = styled(Paper)(({ theme }) => ({
-  //   backgroundColor: '#d66b02',
-  //   textAlign: 'left',
-  //   maxWidth: 'fit-content',
-  //   padding: '10px 15px',
-  //   borderRadius: '14px',
-  //   alignSelf: 'start'
-  // }))
-
-  // const UserBubble = styled(Paper)(({ theme }) => ({
-  //   backgroundColor: '#21a5d9',
-  //   textAlign: 'right',
-  //   maxWidth: 'fit-content',
-  //   padding: '10px 15px',
-  //   borderRadius: '14px',
-  //   alignSelf: 'end'
-  // }))
-
-  // const chatBubbles = chatMessages.map((message, i) => {
-  //   if(message.role === 'assistant') {
-  //     return (
-  //       <NuraBubble key={`${i}- ${message.role}`}>
-  //         {message.content}
-  //       </NuraBubble>
-  //     )
-  //   } else if(message.role === 'user') {
-  //     return (
-  //       <UserBubble key={`${i}-${message.role}`}>
-  //         {message.content}
-  //       </UserBubble>
-  //     )
-  //   }
-  // }) 
 
   const handlers: CallBackDict = {
     0: handleCompletionSubmit,
@@ -285,23 +244,11 @@ export default function Home() {
             wisdom={wisdom}
             imageryUrl={imageSource}
             chatMessages={chatMessages}
+            prompt={prompt}
             handleCloseWindow={handleCloseMagicWindow}
             handleSubmit={handleChatSubmit}
             handleChange={handlePromptChange}
           />
-          {/* <div 
-            className={
-              `w-[760px] h-[760px] absolute z-10 rounded-3xl top-[200px]
-              ${blinkOut ? 'animate-blink_out' : ''}
-            `}
-            style={{
-              transition: 'background-size .2s linear, background .1s linear',
-              background: `url('/nura-headshot.png')`,
-              backgroundSize: `${backgroundSize}%`,
-              backgroundPosition: 'center'
-            }}
-          >
-          </div>
           <div className={`
             absolute top-[50%]
             ${blinkOut ? 'animate-flare_x' : ''}
@@ -311,7 +258,7 @@ export default function Home() {
             absolute top-[40%]
             ${blinkOut ? 'animate-flare_y' : ''}
           `}>
-          </div> */}
+          </div> 
         </>
       }
 
@@ -326,12 +273,6 @@ export default function Home() {
           {wisdom &&
             <p className='text-gray-300'>OLD  {wisdom}</p>
           }
-          
-          {/* {chatBubbles.length &&
-            <Stack spacing={4}>
-              {chatBubbles}
-            </Stack>
-          } */}
 
           {imageSource &&
             <div className='w-[800px]'>

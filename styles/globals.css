@@ -91,12 +91,15 @@ h6 {
 pre, code {
   background-color: #4b5563;
   border-radius: 5px;
-  padding: 3px
+  padding: 2px
 }
 pre {
   padding: 5px;
   margin-bottom: 10px;
   box-shadow: inset 0px 0px 4px black;
+}
+p > code {
+  color: #21a5d9
 }
 
 a {
