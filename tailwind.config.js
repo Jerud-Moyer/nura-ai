@@ -15,7 +15,8 @@ module.exports = {
       colors: {
         light: '#fbfadd',
         bright_light: '#f4dc76',
-        blaze: '#d66b0d'
+        blaze: '#d66b0d',
+        nura_blue: '#21a5d9' 
       },
       keyframes: {
         blink_out: {
@@ -40,12 +41,16 @@ module.exports = {
           '90%': {height: '0px'},
           '97%': {height: '40vh', boxShadow: '0 0 1px 2px #f4dc76'},
           '100%': {height: '0'}
+        },
+        flarble: {
+          '50%': {opacity: '.5', transform: 'scale(1.2)'}
         }
       },
       animation: {
         blink_out: 'blink_out .75s linear',
         flare_x: 'flare_x .5s linear',
-        flare_y: 'flare_y .5s linear'
+        flare_y: 'flare_y .5s linear',
+        flubble: 'flarble 1s ease infinite'
       }
     },
   },

@@ -16,6 +16,29 @@
   }
 }
 
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent #fff;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 5px;
+  margin-left: 4px
+}
+
+*::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, .3);
+  border-radius: 5px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 14px;
+  border: .5px solid #fff;
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
@@ -24,4 +47,73 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+}
+
+.main-nura {
+  text-shadow: 0px 0px 7px #fbfadd;
+}
+
+.delay-one {
+  animation-delay: 1s;
+}
+
+.delay-two {
+  animation-delay: 2s;
+}
+
+
+
+/* special styles for markdown */
+h1 {
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-size: 2.25rem;
+}
+
+h3 {
+  font-size: 2rem;
+}
+
+h4 {
+   font-size: 1.75rem;
+}
+
+h5 {
+  font-size: 1.5rem;
+}
+
+h6 {
+  font-size: 1.25rem;
+}
+
+pre, code {
+  background-color: #4b5563;
+  border-radius: 5px;
+  padding: 3px
+}
+pre {
+  padding: 5px;
+  margin-bottom: 10px;
+  box-shadow: inset 0px 0px 4px black;
+}
+
+a {
+  color: #21a5d9
+}
+
+ul, ol {
+  padding-left: 20px
+}
+
+li {
+  margin-left: 10px;
+}
+
+ul > li {
+  list-style: disc;
+}
+ol > li {
+  list-style: decimal;
 }
