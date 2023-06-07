@@ -5,7 +5,6 @@ import { Button, Tab, Tabs, TextField, Stack, Paper } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useInterval } from '@/hooks/useInterval'
 import { ChatCompletionRequestMessage } from 'openai'
-import { styled } from "@mui/material/styles";
 import { ChatRequestMessage } from '@/types'
 import MagicWindow from '@/components/MagicWindow'
 
@@ -105,10 +104,14 @@ export default function Home() {
             .then(res => {
               console.log('res after calling JSON ', res)
               setWisdom(res.choices[0].text)
-              manageBlinkOut()
+              // manageBlinkOut()
+            }).finally(() => {
+              console.log('FINALLY!')
+              setHasContent(true)
+              setLoading(false)
             })
         } else {
-          console.log('why the error? ', res)
+          console.log('why the error? ', res.json())
         }
       })
   }
@@ -262,18 +265,7 @@ export default function Home() {
         </>
       }
 
-      
-        {/* <div 
-          className='flex flex-col absolute w-[1024px] h-[1024px] items-center z-10'
-          style={{
-            background: `${magicBackground}`
-          }}
-        > */}
         <div>
-          {wisdom &&
-            <p className='text-gray-300'>OLD  {wisdom}</p>
-          }
-
           {imageSource &&
             <div className='w-[800px]'>
               <img 

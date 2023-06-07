@@ -42,15 +42,23 @@ module.exports = {
           '97%': {height: '40vh', boxShadow: '0 0 1px 2px #f4dc76'},
           '100%': {height: '0'}
         },
-        flarble: {
-          '50%': {opacity: '.5', transform: 'scale(1.2)'}
-        }
+        flarble_1: {
+          '25%': {opacity: '.5', transform: 'scale(1.3)'}
+        },
+        flarble_2: {
+          '50%': {opacity: '.5', transform: 'scale(1.3)'}
+        },
+        flarble_3: {
+          '75%': {opacity: '.5', transform: 'scale(1.3)'}
+        },
       },
       animation: {
         blink_out: 'blink_out .75s linear',
         flare_x: 'flare_x .5s linear',
         flare_y: 'flare_y .5s linear',
-        flubble: 'flarble 1s ease infinite'
+        flubble_1: 'flarble_1 1s ease infinite',
+        flubble_2: 'flarble_2 1s ease infinite',
+        flubble_3: 'flarble_3 1s ease infinite'
       }
     },
   },

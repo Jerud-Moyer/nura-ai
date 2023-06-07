@@ -16,6 +16,12 @@
   }
 }
 
+@font-face {
+  font-family: 'arabian-oneknightstand';
+  src: url('../public/fonts/XXII-ARABIAN-ONENIGHTSTAND.ttf');
+  font-display: swap;
+}
+
 /* Firefox */
 * {
   scrollbar-width: thin;
@@ -51,6 +57,7 @@ body {
 
 .main-nura {
   text-shadow: 0px 0px 7px #fbfadd;
+  font-family: 'arabian-oneknightstand';
 }
 
 .delay-one {

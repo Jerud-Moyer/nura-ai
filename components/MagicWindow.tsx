@@ -9,7 +9,7 @@ import {
 import { styled } from "@mui/system";
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 import { ChatCompletionRequestMessage } from "openai";
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import MarkDownContent from "./MarkDownReader";
 // import { useRemarkSync } from "react-remark";
 
@@ -43,6 +43,7 @@ export default function MagicWindow(props: Props) {
     handleSubmit,
     handleChange
   } = props
+  const [tempPrompt, setTempPrompt] = useState<string>('')
   const chatScrollRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -50,6 +51,16 @@ export default function MagicWindow(props: Props) {
       chatScrollRef.current?.scrollIntoView({behavior: 'smooth'})
     }
   }, [chatMessages, loading])
+
+  const handlePrompt = (e:React.ChangeEvent<HTMLInputElement>) => {
+    handleChange(e)
+    setTempPrompt(e.target.value)
+  }
+
+  const handlePromptSubmit = (): void => {
+    handleSubmit()
+    setTempPrompt('')
+  }
 
   const buildABubble = (
     message: ChatRequestMessage,
@@ -83,6 +94,14 @@ export default function MagicWindow(props: Props) {
     buildABubble(message, i)
   ))
 
+  const WisdomBubble = styled(Paper)(({ theme }) => ({
+    backgroundColor: '#d66b02',
+    maxWidth: 'fit-content',
+    padding: '20px',
+    borderRadius: '14px',
+    overflowX: 'auto'
+  }))
+
 
   return (
     <div
@@ -105,7 +124,7 @@ export default function MagicWindow(props: Props) {
         <span 
           className='absolute top-[10px] left-[10px] cursor-pointer'
           onClick={handleCloseWindow}>X</span>
-        {/* {wishType === 'conversation' && */}
+        {wishType === 'Conversation' &&
           <>
             {chatBubbles.length &&
               <div className='h-[85%] overflow-y-auto scrollbar-thin scrollbar-track-gray-200/50'>
@@ -125,12 +144,12 @@ export default function MagicWindow(props: Props) {
                   }
                 </Stack>
                 {loading && 
-                  <div className="w-[85px] h-[40px] bg-blaze flex flex-row items-center space-around rounded-3xl mt-6">
-                    <div className='w-[15px] h-[15px] bg-gray-400 animate-flubble rounded-full mx-1'>
+                  <div className="w-[85px] h-[40px] bg-blaze flex flex-row items-center justify-center rounded-3xl mt-6">
+                    <div className='w-[12px] h-[12px] bg-white animate-flubble_1 rounded-full mx-1'>
                     </div>
-                    <div className='w-[15px] h-[15px] bg-gray-400 animate-flubble  rounded-full mx-1 delay-one'>
+                    <div className='w-[12px] h-[12px] bg-white animate-flubble_2  rounded-full mx-1'>
                     </div>
-                    <div className='w-[15px] h-[15px] bg-gray-400 animate-flubble  rounded-full mx-1 delay-two'>
+                    <div className='w-[12px] h-[12px] bg-white animate-flubble_3  rounded-full mx-1'>
                     </div>
                   </div>
                 }
@@ -140,12 +159,13 @@ export default function MagicWindow(props: Props) {
             <TextField
               variant='outlined'
               label='prompt'
-              onChange={handleChange}
+              onChange={handlePrompt}
+              value={tempPrompt}
               InputProps={{
                 endAdornment: <InputAdornment
                   position='end'
                 >
-                  <IconButton onClick={handleSubmit}>
+                  <IconButton onClick={handlePromptSubmit}>
                     <SendOutlinedIcon/>
                   </IconButton>
                 </InputAdornment>
@@ -153,7 +173,17 @@ export default function MagicWindow(props: Props) {
             />
 
           </>        
-        
+        }
+
+        {wishType === 'Wisdom' &&
+        <div className="min-h-full flex flex-col justify-center">
+          <WisdomBubble>
+            <MarkDownContent 
+              content={wisdom}
+            />
+          </WisdomBubble>
+        </div>
+        }
 
       </div>
     } 
