@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
+import HighlightOffTwoToneIcon from '@mui/icons-material/HighlightOffTwoTone';
 import { ChatCompletionRequestMessage } from "openai";
 import React, { useEffect, useRef, useState } from "react";
 import MarkDownContent from "./MarkDownReader";
@@ -102,28 +103,38 @@ export default function MagicWindow(props: Props) {
     overflowX: 'auto'
   }))
 
+  const backgroundImageUrl: string = imageryUrl || '/nura-headshot.png'
+
+  const backgroundTransitionTime: string = imageryUrl
+    ? '2'
+    : '.1'
 
   return (
     <div
       className={
         `w-[760px] h-[760px] absolute z-10 rounded-3xl top-[150px]
-        ${blinkOut ? 'animate-blink_out' : ''}
+        ${blinkOut ? 'animate-blink_out shadow-2xl shadow-light' : ''}
       `}
       style={{
-        transition: 'background-size .2s linear, background .1s linear',
-        background: `url('/nura-headshot.png')`,
+        transition: `background-size .2s linear, background ${backgroundTransitionTime}s linear`,
+        background: 'url(/nura-headshot.png)',
         backgroundSize: `${backgroundSize}%`,
         backgroundPosition: 'center'
       }}
     >
     {hasContent &&
       <div 
-        className='relative h-full w-full flex flex-col
-        justify-between bg-gray-900/50 rounded-2xl p-8'
+        className={`relative h-full w-full flex flex-col
+        justify-between bg-gray-900/50 rounded-2xl
+        ${wishType === 'Imagery' ? '' : 'p-8'}`}
       >
         <span 
           className='absolute top-[10px] left-[10px] cursor-pointer'
-          onClick={handleCloseWindow}>X</span>
+          onClick={handleCloseWindow}
+        >
+          X
+            {/* <HighlightOffTwoToneIcon fontSize='large'/> */}
+        </span>
         {wishType === 'Conversation' &&
           <>
             {chatBubbles.length &&
@@ -183,6 +194,15 @@ export default function MagicWindow(props: Props) {
             />
           </WisdomBubble>
         </div>
+        }
+
+        {wishType === 'Imagery' &&
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={imageryUrl}
+            alt='your image'
+            className="h-full w-full animate-reveal rounded-2xl"
+          />
         }
 
       </div>

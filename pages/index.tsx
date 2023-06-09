@@ -70,6 +70,7 @@ export default function Home() {
   const handleCloseMagicWindow = (): void => {
     manageBlinkOut()
     setChatMessages([systemMessage])
+    setImageSource('')
   }
 
   const magicBackground = '' // todo set this up
@@ -158,11 +159,15 @@ export default function Home() {
             .then(res => {
               console.log('res after calling JSON ', res)
               if(wishType === 2) {
+                console.log('wishtype 2? ', wishType)
                 setMultiImageSources(res.data)
               } else {
+                console.log('oooor not ', wishType)
                 setImageSource(res.data[0].url)
               }
-              manageBlinkOut()
+              setHasContent(true)
+              setLoading(false)
+              // manageBlinkOut()
             })
         } else {
           console.log('why the error? ', res)
@@ -253,19 +258,19 @@ export default function Home() {
             handleChange={handlePromptChange}
           />
           <div className={`
-            absolute top-[50%]
+            absolute top-[50%] h-[1px] w-[1px] border border-color-blaze shadow-md shadow-bright_light
             ${blinkOut ? 'animate-flare_x' : ''}
           `}>
           </div>
           <div className={`
-            absolute top-[40%]
+            absolute top-[40%] h-[2px] w-[1px] border border-color-blaze shadow-md shadow-bright_light
             ${blinkOut ? 'animate-flare_y' : ''}
           `}>
           </div> 
         </>
       }
 
-        <div>
+        {/* <div>
           {imageSource &&
             <div className='w-[800px]'>
               <img 
@@ -276,7 +281,7 @@ export default function Home() {
               />
             </div>
           }
-        </div>
+        </div> */}
       
       {multiImageSources &&
         <div>

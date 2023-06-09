@@ -25,22 +25,19 @@ module.exports = {
           '97%': {
             transform: 'scale(.02)', 
             background: '#d66b0d', 
-            boxShadow: '0 0 5px 10px #f4dc76',
             borderRadius: '100%'
           },
           '100%': {transform: 'scale(0)'}
         },
         flare_x: {
-          '0%': {width: '0px', height: '1px', border: 'solid 1px #d66b0d'},
-          '90%': {width: '0px'},
-          '97%': {width: '60vw', boxShadow: '0 0 1px 2px #f4dc76'},
-          '100%': {width: '0'}
+          '90%': {transform: 'scaleX(0)'},
+          '97%': {transform: 'scaleX(400)'},
+          '100%': {transform: 'scaleX(0)'}
         },
         flare_y: {
-          '0%': {width: '1px', height: '0px', border: 'solid 1px #d66b0d'},
-          '90%': {height: '0px'},
-          '97%': {height: '40vh', boxShadow: '0 0 1px 2px #f4dc76'},
-          '100%': {height: '0'}
+          '90%': {transform: 'scaleY(1)'},
+          '97%': {transform: 'scaleY(400)'},
+          '100%': {transform: 'scaleY(1)'}
         },
         flarble_1: {
           '25%': {opacity: '.5', transform: 'scale(1.3)'}
@@ -51,6 +48,10 @@ module.exports = {
         flarble_3: {
           '75%': {opacity: '.5', transform: 'scale(1.3)'}
         },
+        reveal: {
+          '0%': {opacity: '0'},
+          '100%': {opacity: '1'}
+        }
       },
       animation: {
         blink_out: 'blink_out .75s linear',
@@ -58,7 +59,8 @@ module.exports = {
         flare_y: 'flare_y .5s linear',
         flubble_1: 'flarble_1 1s ease infinite',
         flubble_2: 'flarble_2 1s ease infinite',
-        flubble_3: 'flarble_3 1s ease infinite'
+        flubble_3: 'flarble_3 1s ease infinite',
+        reveal: 'reveal 2s ease'
       }
     },
   },

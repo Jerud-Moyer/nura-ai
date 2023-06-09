@@ -4,7 +4,7 @@ import openai from '../../../openai-config/openai'
 const getImage = async(prompt: string) => {
   return await openai.createImage({
     prompt,
-    n: 5,
+    // n: 5,
     size: '1024x1024'
   })
 }
