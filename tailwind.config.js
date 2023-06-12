@@ -51,6 +51,11 @@ module.exports = {
         reveal: {
           '0%': {opacity: '0'},
           '100%': {opacity: '1'}
+        },
+        reveal_delayed: {
+          '0%': {opacity: '0'},
+          '50%': {opacity: '0'},
+          '100%': {opacity: '1'}
         }
       },
       animation: {
@@ -60,7 +65,8 @@ module.exports = {
         flubble_1: 'flarble_1 1s ease infinite',
         flubble_2: 'flarble_2 1s ease infinite',
         flubble_3: 'flarble_3 1s ease infinite',
-        reveal: 'reveal 2s ease'
+        reveal: 'reveal 2s ease',
+        reveal_slower: 'reveal_delayed 4s ease'
       }
     },
   },

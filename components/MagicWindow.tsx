@@ -9,10 +9,12 @@ import {
 import { styled } from "@mui/system";
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 import HighlightOffTwoToneIcon from '@mui/icons-material/HighlightOffTwoTone';
-import { ChatCompletionRequestMessage } from "openai";
-import React, { useEffect, useRef, useState } from "react";
+import React, { 
+  useEffect, 
+  useRef, 
+  useState 
+} from "react";
 import MarkDownContent from "./MarkDownReader";
-// import { useRemarkSync } from "react-remark";
 
 interface Props {
   blinkOut: boolean,
@@ -45,13 +47,21 @@ export default function MagicWindow(props: Props) {
     handleChange
   } = props
   const [tempPrompt, setTempPrompt] = useState<string>('')
+  const [showCloseIcon, setShowCloseIcon] = useState<boolean>(true)
   const chatScrollRef = useRef<HTMLDivElement | null>(null)
+  const imageRef = useRef<HTMLImageElement | null>(null)
 
   useEffect(() => {
     if(chatScrollRef.current) {
       chatScrollRef.current?.scrollIntoView({behavior: 'smooth'})
     }
   }, [chatMessages, loading])
+
+  useEffect(() => {
+    if(imageRef.current) {
+      setShowCloseIcon(true)
+    }
+  }, [imageRef])
 
   const handlePrompt = (e:React.ChangeEvent<HTMLInputElement>) => {
     handleChange(e)
@@ -109,6 +119,11 @@ export default function MagicWindow(props: Props) {
     ? '2'
     : '.1'
 
+  const handleCloseMagicWindow = () => {
+    setShowCloseIcon(false)
+    handleCloseWindow()
+  }
+
   return (
     <div
       className={
@@ -128,13 +143,14 @@ export default function MagicWindow(props: Props) {
         justify-between bg-gray-900/50 rounded-2xl
         ${wishType === 'Imagery' ? '' : 'p-8'}`}
       >
-        <span 
-          className='absolute top-[10px] left-[10px] cursor-pointer'
-          onClick={handleCloseWindow}
-        >
-          X
-            {/* <HighlightOffTwoToneIcon fontSize='large'/> */}
-        </span>
+        {showCloseIcon && wishType !== 'Imagery' &&
+          <span 
+            className='absolute top-[10px] left-[10px] cursor-pointer bg-gray-600 rounded-full animate-reveal'
+            onClick={handleCloseMagicWindow}
+          >
+              <HighlightOffTwoToneIcon fontSize='large'/>
+          </span>
+        }
         {wishType === 'Conversation' &&
           <>
             {chatBubbles.length &&
@@ -153,17 +169,17 @@ export default function MagicWindow(props: Props) {
                       content: prompt
                     })
                   }
+                  {loading && 
+                    <div className="w-[85px] h-[40px] bg-blaze flex flex-row items-center justify-center rounded-3xl mt-6">
+                      <div className='w-[12px] h-[12px] bg-white animate-flubble_1 rounded-full mx-1'>
+                      </div>
+                      <div className='w-[12px] h-[12px] bg-white animate-flubble_2  rounded-full mx-1'>
+                      </div>
+                      <div className='w-[12px] h-[12px] bg-white animate-flubble_3  rounded-full mx-1'>
+                      </div>
+                    </div>
+                  }
                 </Stack>
-                {loading && 
-                  <div className="w-[85px] h-[40px] bg-blaze flex flex-row items-center justify-center rounded-3xl mt-6">
-                    <div className='w-[12px] h-[12px] bg-white animate-flubble_1 rounded-full mx-1'>
-                    </div>
-                    <div className='w-[12px] h-[12px] bg-white animate-flubble_2  rounded-full mx-1'>
-                    </div>
-                    <div className='w-[12px] h-[12px] bg-white animate-flubble_3  rounded-full mx-1'>
-                    </div>
-                  </div>
-                }
                 <div ref={chatScrollRef}></div>
               </div>
             }
@@ -196,13 +212,25 @@ export default function MagicWindow(props: Props) {
         </div>
         }
 
-        {wishType === 'Imagery' &&
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={imageryUrl}
-            alt='your image'
-            className="h-full w-full animate-reveal rounded-2xl"
-          />
+        {wishType === 'Imagery' && !blinkOut && hasContent &&
+        <>
+          {showCloseIcon &&
+            <span 
+              className='absolute top-[10px] left-[10px] cursor-pointer bg-gray-600 rounded-full animate-reveal_slower'
+              onClick={handleCloseMagicWindow}
+            >
+                <HighlightOffTwoToneIcon fontSize='large'/>
+            </span>
+          }
+          {// eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={imageryUrl}
+              alt='your image'
+              ref={imageRef}
+              className="h-full w-full animate-reveal rounded-2xl"
+            />
+          }
+        </>
         }
 
       </div>

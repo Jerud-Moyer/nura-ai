@@ -2,7 +2,7 @@
 import Image, { StaticImageData } from 'next/image'
 import { Inter } from 'next/font/google'
 import { Button, Tab, Tabs, TextField, Stack, Paper } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useInterval } from '@/hooks/useInterval'
 import { ChatCompletionRequestMessage } from 'openai'
 import { ChatRequestMessage } from '@/types'
@@ -35,12 +35,13 @@ export default function Home() {
   const [backgroundSize, setBackgroundSize] = useState<number>(100)
   const [chatMessages, setChatMessages] = useState<ChatRequestMessage[]>([{role: '', content: ''}])
 
-  const systemMessageContent = process.env.CHAT_SYSTEM_MESSAGE_CONTENT || ''
+  const systemMessageContent: string = process.env.NEXT_PUBLIC_SYSTEM_MESSAGE as string
   
-  const systemMessage = {
+ const systemMessage = useMemo(() => ({
     role: 'system',
     content: systemMessageContent
-  }
+  }),  [systemMessageContent])
+
 
   useEffect(() => {
     setTimeout(() => {
@@ -51,9 +52,12 @@ export default function Home() {
       setBlinkout(false)
     }, 2500)
 
-    setChatMessages([systemMessage])
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+  
+  useEffect(() => {
+    console.log('message => ', systemMessageContent)
+    setChatMessages([systemMessage])
+  }, [systemMessageContent, systemMessage])
 
   const manageBlinkOut = () => {
     setBlinkout(true)
@@ -96,6 +100,7 @@ export default function Home() {
   }, !hasContent && (loading || welcome) ? 100 : 0)
 
   const handleCompletionSubmit = (): void => {
+    console.log('completion submit')
     setBackgroundSize(100)
     setLoading(true)
     fetch(`/api/completion-request/${prompt}`)
@@ -119,6 +124,7 @@ export default function Home() {
 
   
   const handleChatSubmit = (): void => {  
+    console.log('chat submit')
     const newMessage = {role: 'user', content: prompt}
     const messages = [...chatMessages, newMessage]
     setLoading(true)
@@ -150,6 +156,7 @@ export default function Home() {
   }
 
   const handleImageSubmit = () => {
+    console.log('image submit')
     setBackgroundSize(100)
     setLoading(true)
     fetch(`/api/image-request/${prompt}`)
@@ -257,31 +264,22 @@ export default function Home() {
             handleSubmit={handleChatSubmit}
             handleChange={handlePromptChange}
           />
-          <div className={`
-            absolute top-[50%] h-[1px] w-[1px] border border-color-blaze shadow-md shadow-bright_light
-            ${blinkOut ? 'animate-flare_x' : ''}
-          `}>
-          </div>
-          <div className={`
-            absolute top-[40%] h-[2px] w-[1px] border border-color-blaze shadow-md shadow-bright_light
-            ${blinkOut ? 'animate-flare_y' : ''}
-          `}>
-          </div> 
+          {blinkOut &&
+            <>
+              <div className={`
+                absolute top-[50%] h-[1px] w-[1px] border border-color-blaze shadow-md shadow-bright_light
+                ${blinkOut ? 'animate-flare_x' : ''}
+              `}>
+              </div>
+              <div className={`
+                absolute top-[40%] h-[2px] w-[1px] border border-color-blaze shadow-md shadow-bright_light
+                ${blinkOut ? 'animate-flare_y' : ''}
+              `}>
+              </div> 
+            </>
+          }
         </>
       }
-
-        {/* <div>
-          {imageSource &&
-            <div className='w-[800px]'>
-              <img 
-                src={imageSource} 
-                alt='AI image' 
-                width='800'
-                height='800'
-              />
-            </div>
-          }
-        </div> */}
       
       {multiImageSources &&
         <div>

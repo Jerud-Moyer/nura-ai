@@ -10,7 +10,7 @@ const nextConfig = {
         pathname: '/private/**'
       }
     ]
-  }
+  },
 }
 
 module.exports = nextConfig
