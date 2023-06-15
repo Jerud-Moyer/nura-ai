@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import Image, { StaticImageData } from 'next/image'
 import { Inter } from 'next/font/google'
-import { Button, Tab, Tabs, TextField, Stack, Paper } from '@mui/material'
+import { Button, Tab, Tabs, TextField, Stack, Paper, Dialog } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
 import { useInterval } from '@/hooks/useInterval'
 import { ChatCompletionRequestMessage } from 'openai'
@@ -34,6 +34,8 @@ export default function Home() {
   const [blinkOut, setBlinkout] = useState<boolean>(false)
   const [backgroundSize, setBackgroundSize] = useState<number>(100)
   const [chatMessages, setChatMessages] = useState<ChatRequestMessage[]>([{role: '', content: ''}])
+  const [showAboutDialog, setShowAboutDialog] = useState<boolean>(false)
+  const [showMoreDialog, setShowMoreDialog] = useState<boolean>(false)
 
   const systemMessageContent: string = process.env.NEXT_PUBLIC_SYSTEM_MESSAGE as string
   
@@ -208,9 +210,76 @@ export default function Home() {
 
   return (
     <main
-      className={`flex min-h-screen flex-col items-center p-16 bg-gray-900 relative ${inter.className}`}
+      className={`main-box flex flex-col items-center p-16 bg-gray-900 relative ${inter.className}`}
     >
       <div className='mb-36 flex flex-col items-center'>
+        <div className='absolute top-2 right-12 flex flex-row'>
+          <div className='mx-2'>
+            <Button
+              variant='text'
+              onClick={() => setShowAboutDialog(true)}
+            >
+              about Nura
+            </Button>
+          </div>
+          <div className='mx-2'>
+            <Button
+              variant='text'
+              onClick={() => setShowMoreDialog(true)}
+            >
+              more like this
+            </Button>
+          </div>
+        </div>
+        <Dialog 
+          open={showAboutDialog}
+          onClose={() => setShowAboutDialog(false)}  
+        >
+          <Paper
+            sx={{
+              padding: '40px',
+              borderRadius: '10px'
+            }}
+          >
+            <p className='text-2xl text-blaze text-center'>
+              About Nura
+            </p>
+            <p className='text-nura_blue my-2'>
+              Nura came about quite simply as an exploration into OpenAI&rsquo;s API. The Wisdom function is built on a custom fine-tuned version of the Davinci model, while conversation utilizes the same GPT-3-turbo model as Chat-GPT. The Imagery comes courtesy of the DALL-E imaging model. 
+            </p>
+            <p className='text-nura_blue'>
+              As a developer I wanted to utilize Nura&rsquo;s abilities as much as possible during the development process. All images in the app where created by Nura, it helped me through a couple of interesting coding problems, and it even named itself.
+            </p>
+          </Paper>
+        </Dialog>
+        <Dialog 
+          open={showMoreDialog}
+          onClose={() => setShowMoreDialog(false)}  
+        >
+          <Paper
+            sx={{
+              padding: '40px',
+              borderRadius: '10px'
+            }}
+          >
+            <div className='flex flex-col items-center'>
+              <a 
+                className='text-xl text-nura_blue my-3'
+                href='https://nerdmeme.fun'
+                target='blank'  
+              >
+                nerdMeme.fun
+              </a>
+              <a 
+                className='text-xl text-nura_blue my-3'
+                href='https://jerud-moyer.dev' 
+                target='blank' 
+              >
+                jerud-moyer.dev
+              </a>
+            </div>
+          </Paper>
+        </Dialog>
         <p className='text-6xl text-blaze text-center mb-12 main-nura'>
           NURA
         </p>
