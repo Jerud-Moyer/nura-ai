@@ -2,7 +2,7 @@
 import Image, { StaticImageData } from 'next/image'
 import { Inter } from 'next/font/google'
 import { Button, Tab, Tabs, TextField, Stack, Paper, Dialog } from '@mui/material'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useInterval } from '@/hooks/useInterval'
 import { ChatCompletionRequestMessage } from 'openai'
 import { ChatRequestMessage } from '@/types'
@@ -36,6 +36,8 @@ export default function Home() {
   const [chatMessages, setChatMessages] = useState<ChatRequestMessage[]>([{role: '', content: ''}])
   const [showAboutDialog, setShowAboutDialog] = useState<boolean>(false)
   const [showMoreDialog, setShowMoreDialog] = useState<boolean>(false)
+  const [magicWindowHeight, setMagicWindowHeight] = useState<number>(0)
+  const appRef = useRef<HTMLElement>(null)
 
   const systemMessageContent: string = process.env.NEXT_PUBLIC_SYSTEM_MESSAGE as string
   
@@ -55,6 +57,12 @@ export default function Home() {
     }, 2500)
 
   }, [])
+
+  useEffect(() => {
+    if(appRef.current) {
+      setMagicWindowHeight(appRef.current.clientHeight - 200)
+    }
+  }, [appRef])
   
   useEffect(() => {
     console.log('message => ', systemMessageContent)
@@ -92,12 +100,11 @@ export default function Home() {
   const wishTypes: NumIndexed = {
     0: 'Wisdom',
     1: 'Imagery',
-    2: 'Multi Images',
-    3: 'Conversation'
+    // 2: 'Multi Images',
+    2: 'Conversation'
   }
 
   useInterval(() => {
-    // console.log('counter => ', backgroundSize)
     setBackgroundSize(backgroundSize + .3)
   }, !hasContent && (loading || welcome) ? 100 : 0)
 
@@ -112,7 +119,6 @@ export default function Home() {
             .then(res => {
               console.log('res after calling JSON ', res)
               setWisdom(res.choices[0].text)
-              // manageBlinkOut()
             }).finally(() => {
               console.log('FINALLY!')
               setHasContent(true)
@@ -125,7 +131,7 @@ export default function Home() {
   }
 
   
-  const handleChatSubmit = (): void => {  
+  const handleChatSubmit = (attempts: number = 0): void => {  
     console.log('chat submit')
     const newMessage = {role: 'user', content: prompt}
     const messages = [...chatMessages, newMessage]
@@ -152,7 +158,12 @@ export default function Home() {
               setLoading(false)
             })
         } else {
-          console.log('why the error? ', res)
+          if(attempts <= 3) {
+            console.log(`error - waiting for re-attempt number ${attempts + 1}`)
+            handleChatSubmit(attempts + 1)
+          } else {
+            console.log('why the error? ', res)
+          }
         }
       })
   }
@@ -168,6 +179,7 @@ export default function Home() {
             .then(res => {
               console.log('res after calling JSON ', res)
               if(wishType === 2) {
+                // only if multi image reinstated!
                 console.log('wishtype 2? ', wishType)
                 setMultiImageSources(res.data)
               } else {
@@ -198,8 +210,8 @@ export default function Home() {
   const handlers: CallBackDict = {
     0: handleCompletionSubmit,
     1: handleImageSubmit,
-    2: handleImageSubmit,
-    3: handleChatSubmit
+    // 2: handleImageSubmit,
+    2: handleChatSubmit
   }
 
   const handleSubmit = () => {
@@ -210,6 +222,7 @@ export default function Home() {
 
   return (
     <main
+      ref={appRef}
       className={`main-box flex flex-col items-center p-16 bg-gray-900 relative ${inter.className}`}
     >
       <div className='mb-36 flex flex-col items-center'>
@@ -280,7 +293,7 @@ export default function Home() {
             </div>
           </Paper>
         </Dialog>
-        <p className='text-6xl text-blaze text-center mb-12 main-nura'>
+        <p className='text-6xl text-blaze text-center mb-20 main-nura'>
           NURA
         </p>
         <p className='text-center text-gray-200 mb-3'>
@@ -289,7 +302,7 @@ export default function Home() {
         <Tabs value={wishType} onChange={handleWishTypeChange}>
           <Tab label='wisdom'/>
           <Tab label='imagery'/>
-          <Tab label='multi image'/>
+          {/* <Tab label='multi image'/> */}
           <Tab label='conversation'/>
         </Tabs>
         <div className='mt-12 w-[500px] max-w-[90%]'>
@@ -329,6 +342,7 @@ export default function Home() {
             imageryUrl={imageSource}
             chatMessages={chatMessages}
             prompt={prompt}
+            magicWindowHeight={magicWindowHeight}
             handleCloseWindow={handleCloseMagicWindow}
             handleSubmit={handleChatSubmit}
             handleChange={handlePromptChange}
@@ -341,7 +355,7 @@ export default function Home() {
               `}>
               </div>
               <div className={`
-                absolute top-[40%] h-[2px] w-[1px] border border-color-blaze shadow-md shadow-bright_light
+                absolute top-[50%] h-[2px] w-[1px] border border-color-blaze shadow-md shadow-bright_light
                 ${blinkOut ? 'animate-flare_y' : ''}
               `}>
               </div> 

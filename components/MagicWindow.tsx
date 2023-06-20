@@ -26,6 +26,7 @@ interface Props {
   imageryUrl: string,
   chatMessages: ChatRequestMessage[],
   prompt: string,
+  magicWindowHeight: number,
   handleCloseWindow: () => void,
   handleSubmit: () => void,
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -42,6 +43,7 @@ export default function MagicWindow(props: Props) {
     imageryUrl,
     chatMessages,
     prompt,
+    magicWindowHeight,
     handleCloseWindow,
     handleSubmit,
     handleChange
@@ -127,10 +129,12 @@ export default function MagicWindow(props: Props) {
   return (
     <div
       className={
-        `w-[760px] h-[760px] absolute z-10 rounded-3xl top-[150px]
+        `absolute z-10 rounded-3xl top-[150px]
         ${blinkOut ? 'animate-blink_out shadow-2xl shadow-light' : ''}
       `}
       style={{
+        height: `${magicWindowHeight}px`,
+        width: `${magicWindowHeight}px`,
         transition: `background-size .2s linear, background ${backgroundTransitionTime}s linear`,
         background: 'url(/nura-headshot.png)',
         backgroundSize: `${backgroundSize}%`,
