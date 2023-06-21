@@ -59,13 +59,18 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
+    const windowWidth = window.screen.width
     if(appRef.current) {
-      setMagicWindowHeight(appRef.current.clientHeight - 200)
+      const magicHeight = appRef.current.clientHeight - 200
+      if(windowWidth > magicHeight) {
+        setMagicWindowHeight(magicHeight)
+      } else {
+        setMagicWindowHeight(windowWidth - 50)
+      }
     }
-  }, [appRef])
+  }, [appRef.current?.clientHeight])
   
   useEffect(() => {
-    console.log('message => ', systemMessageContent)
     setChatMessages([systemMessage])
   }, [systemMessageContent, systemMessage])
 
@@ -215,7 +220,6 @@ export default function Home() {
   }
 
   const handleSubmit = () => {
-    console.log('initial handler')
     handlers[wishType]()
   }
 
@@ -305,7 +309,7 @@ export default function Home() {
           {/* <Tab label='multi image'/> */}
           <Tab label='conversation'/>
         </Tabs>
-        <div className='mt-12 w-[500px] max-w-[90%]'>
+        <div className='mt-12 w-[500px] max-w-[90vw]'>
           <TextField
             label='Enter your Wish'
             multiline
