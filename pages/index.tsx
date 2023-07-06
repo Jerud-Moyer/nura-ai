@@ -23,6 +23,9 @@ type CallBackDict = {
 }
 
 export default function Home() {
+  const preImageUrl = process.env.NEXT_PUBLIC_IMAGE_URL
+  const initialImageUrl = `${preImageUrl}nura_1`
+  const [magicBackground, setMagicBackground] = useState<string>(initialImageUrl)
   const [prompt, setPrompt] = useState<string>('')
   const [wisdom, setWisdom] = useState<string>('')
   const [imageSource, setImageSource] = useState<string>('')
@@ -92,7 +95,7 @@ export default function Home() {
     setImageSource('')
   }
 
-  const magicBackground = '' // todo set this up
+ // const magicBackground = ''  todo set this up
 
   const handlePromptChange = (e:React.ChangeEvent<HTMLInputElement>): void => {
     setPrompt(e.target.value)
@@ -113,11 +116,18 @@ export default function Home() {
     setBackgroundSize(backgroundSize + .3)
   }, !hasContent && (loading || welcome) ? 100 : 0)
 
+  const getBackgroundImage = () => {
+    const imageIdx = Math.floor(Math.random() * 22) + 1
+    const newImageUrl = `${preImageUrl}nura_${imageIdx}`
+    setMagicBackground(newImageUrl)
+  }
+
   const handleCompletionSubmit = (): void => {
     console.log('completion submit')
+    getBackgroundImage()
     setBackgroundSize(100)
     setLoading(true)
-    fetch(`/api/completion-request/${prompt}`)
+    fetch(`/api/completion-request/${prompt} ->`)
       .then(res => {
         if(res.ok) {
           res.json()
@@ -141,6 +151,7 @@ export default function Home() {
     const newMessage = {role: 'user', content: prompt}
     const messages = [...chatMessages, newMessage]
     setLoading(true)
+    if (messages.length === 2) getBackgroundImage()
     fetch(`/api/chat-request/`, {
       method: 'POST',
       headers: {
@@ -175,6 +186,7 @@ export default function Home() {
 
   const handleImageSubmit = () => {
     console.log('image submit')
+    getBackgroundImage()
     setBackgroundSize(100)
     setLoading(true)
     fetch(`/api/image-request/${prompt}`)
@@ -339,6 +351,7 @@ export default function Home() {
           <MagicWindow
             blinkOut={blinkOut}
             backgroundSize={backgroundSize}
+            magicBackground={magicBackground}
             wishType={wishTypes[wishType]}
             loading={loading}
             hasContent={hasContent}

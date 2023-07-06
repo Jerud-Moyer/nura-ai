@@ -19,6 +19,7 @@ import MarkDownContent from "./MarkDownReader";
 interface Props {
   blinkOut: boolean,
   backgroundSize: number,
+  magicBackground: string,
   loading: boolean,
   hasContent: boolean,
   wishType: string,
@@ -36,6 +37,7 @@ export default function MagicWindow(props: Props) {
   const { 
     blinkOut,
     backgroundSize,
+    magicBackground,
     wishType,
     loading,
     hasContent,
@@ -48,6 +50,7 @@ export default function MagicWindow(props: Props) {
     handleSubmit,
     handleChange
   } = props
+  
   const [tempPrompt, setTempPrompt] = useState<string>('')
   const [showCloseIcon, setShowCloseIcon] = useState<boolean>(true)
   const chatScrollRef = useRef<HTMLDivElement | null>(null)
@@ -71,6 +74,7 @@ export default function MagicWindow(props: Props) {
   }
 
   const handlePromptSubmit = (): void => {
+    // getBackgroundImage()
     handleSubmit()
     setTempPrompt('')
   }
@@ -115,8 +119,6 @@ export default function MagicWindow(props: Props) {
     overflowX: 'auto'
   }))
 
-  const backgroundImageUrl: string = imageryUrl || '/nura-headshot.png'
-
   const backgroundTransitionTime: string = imageryUrl
     ? '2'
     : '.1'
@@ -135,8 +137,8 @@ export default function MagicWindow(props: Props) {
       style={{
         height: `${magicWindowHeight}px`,
         width: `${magicWindowHeight}px`,
+        background: `url(${magicBackground})`,
         transition: `background-size .2s linear, background ${backgroundTransitionTime}s linear`,
-        background: 'url(/nura-headshot.png)',
         backgroundSize: `${backgroundSize}%`,
         backgroundPosition: 'center'
       }}

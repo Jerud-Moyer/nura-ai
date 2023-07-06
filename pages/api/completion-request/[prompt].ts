@@ -2,10 +2,12 @@ import { NextApiRequest, NextApiResponse } from "next"
 import openai from '../../../openai-config/openai'
 
 const getResponse = async(prompt: string) => {
+  const modelId = process.env.FINE_TUNED_MODEL as string
+  console.log('model => ', modelId)
   return await openai.createCompletion({
-    model: 'text-davinci-003',
+    model: modelId,
     prompt,
-    temperature: 1,
+    temperature: .3,
     max_tokens: 1200
   });
 };
