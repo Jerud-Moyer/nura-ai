@@ -14,7 +14,7 @@ const getResponse = async(prompt: string) => {
     prompt,
     temperature: .3,
     max_tokens: 1200,
-    stream: true
+    // stream: true
   });
 };
 
