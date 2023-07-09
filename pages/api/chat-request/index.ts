@@ -17,10 +17,17 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log('hit the route')
   const messages = req.body
   console.log('prompt => ', messages)
-  const response =  await getResponse(messages)
-  console.log('response => ', response?.data.choices)
-  res.send(response?.data)
+  try {
+    const response =  await getResponse(messages)
+    console.log('response => ', response?.data.choices)
+    res.send(response?.data)
+  } catch(error: any) {
+    if(error.response) {
+      res.send(error.response.data)
+    } else {
+      res.send(error)
+    }
+  }
 }

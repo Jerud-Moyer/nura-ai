@@ -18,7 +18,16 @@ export default async function handler(
 ) {
   const prompt = req.query.prompt as string
   console.log('prompt => ', prompt)
-  const response =  await getResponse(prompt)
-  console.log('response => ', response.data.choices)
-  res.send(response.data)
+
+  try{
+    const response =  await getResponse(prompt)
+    console.log('response => ', response.data.choices)
+    res.send(response.data)
+  } catch(error: any) {
+    if(error.response) {
+      res.send(error.response.data)
+    } else {
+      res.send(error)
+    }
+  }
 }

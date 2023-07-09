@@ -40,7 +40,9 @@ export default function Home() {
   const [showAboutDialog, setShowAboutDialog] = useState<boolean>(false)
   const [showMoreDialog, setShowMoreDialog] = useState<boolean>(false)
   const [magicWindowHeight, setMagicWindowHeight] = useState<number>(0)
+  const [error, setError] = useState<string>('')
   const appRef = useRef<HTMLElement>(null)
+
 
   const systemMessageContent: string = process.env.NEXT_PUBLIC_SYSTEM_MESSAGE as string
   
@@ -93,6 +95,7 @@ export default function Home() {
     manageBlinkOut()
     setChatMessages([systemMessage])
     setImageSource('')
+    setError('')
   }
 
  // const magicBackground = ''  todo set this up
@@ -123,25 +126,24 @@ export default function Home() {
   }
 
   const handleCompletionSubmit = (): void => {
-    console.log('completion submit')
     getBackgroundImage()
     setBackgroundSize(100)
     setLoading(true)
     fetch(`/api/completion-request/${prompt} ->`)
+      .then(res => res.json())
       .then(res => {
-        if(res.ok) {
-          res.json()
-            .then(res => {
-              console.log('res after calling JSON ', res)
-              setWisdom(res.choices[0].text)
-            }).finally(() => {
-              console.log('FINALLY!')
-              setHasContent(true)
-              setLoading(false)
-            })
+        if(!res.error) {
+          console.log('res after calling JSON ', res)
+          setWisdom(res.choices[0].text)
+        } else if(res.error) {
+          setError(`a ${res.error.code} error has occurred - ${res.error.message}`)
         } else {
-          console.log('why the error? ', res.json())
+          console.log('why the error? ', res)
+          setError(`a ${res.status} error has occurred - ${res.statusText}`)
         }
+      }).finally(() => {
+        setHasContent(true)
+        setLoading(false)
       })
   }
 
@@ -178,22 +180,22 @@ export default function Home() {
             console.log(`error - waiting for re-attempt number ${attempts + 1}`)
             handleChatSubmit(attempts + 1)
           } else {
+            res.json()
             console.log('why the error? ', res)
+            setError(`a ${res.status} error has occurred - ${res.statusText}`)
           }
         }
       })
   }
 
   const handleImageSubmit = () => {
-    console.log('image submit')
     getBackgroundImage()
     setBackgroundSize(100)
     setLoading(true)
     fetch(`/api/image-request/${prompt}`)
+      .then(res => res.json())
       .then(res => {
-        if(res.ok) {
-          res.json()
-            .then(res => {
+        if(!res.error) {
               console.log('res after calling JSON ', res)
               if(wishType === 2) {
                 // only if multi image reinstated!
@@ -203,13 +205,14 @@ export default function Home() {
                 console.log('oooor not ', wishType)
                 setImageSource(res.data[0].url)
               }
-              setHasContent(true)
-              setLoading(false)
-              // manageBlinkOut()
-            })
+        } else if(res.error) {
+          setError(`a ${res.error.code} error has occurred - ${res.error.message}`)
         } else {
-          console.log('why the error? ', res)
+          setError(`a ${res.status} error has occured. - ${res.statusText} - please try again`)
         }
+      }).finally(() => {
+        setHasContent(true)
+        setLoading(false)
       })
   }
 
@@ -360,6 +363,7 @@ export default function Home() {
             chatMessages={chatMessages}
             prompt={prompt}
             magicWindowHeight={magicWindowHeight}
+            error={error}
             handleCloseWindow={handleCloseMagicWindow}
             handleSubmit={handleChatSubmit}
             handleChange={handlePromptChange}

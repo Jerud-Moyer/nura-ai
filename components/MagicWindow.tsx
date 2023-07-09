@@ -28,6 +28,7 @@ interface Props {
   chatMessages: ChatRequestMessage[],
   prompt: string,
   magicWindowHeight: number,
+  error: string,
   handleCloseWindow: () => void,
   handleSubmit: () => void,
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -46,6 +47,7 @@ export default function MagicWindow(props: Props) {
     chatMessages,
     prompt,
     magicWindowHeight,
+    error,
     handleCloseWindow,
     handleSubmit,
     handleChange
@@ -55,6 +57,7 @@ export default function MagicWindow(props: Props) {
   const [showCloseIcon, setShowCloseIcon] = useState<boolean>(true)
   const chatScrollRef = useRef<HTMLDivElement | null>(null)
   const imageRef = useRef<HTMLImageElement | null>(null)
+  const hasError: boolean = error.length > 0
 
   useEffect(() => {
     if(chatScrollRef.current) {
@@ -157,6 +160,12 @@ export default function MagicWindow(props: Props) {
               <HighlightOffTwoToneIcon fontSize='large'/>
           </span>
         }
+        {hasError && wishType !== 'Imagery' &&
+          buildABubble({
+            role: '',
+            content: error
+          })
+        }
         {wishType === 'Conversation' &&
           <>
             {chatBubbles.length &&
@@ -228,7 +237,18 @@ export default function MagicWindow(props: Props) {
                 <HighlightOffTwoToneIcon fontSize='large'/>
             </span>
           }
-          {// eslint-disable-next-line @next/next/no-img-element
+          {hasError &&
+          <div className='p-8 mt-32'>
+            {
+              buildABubble({
+                role: '',
+                content: error
+              })
+            }
+          </div>
+          }
+          { imageryUrl &&
+          // eslint-disable-next-line @next/next/no-img-element
             <img
               src={imageryUrl}
               alt='your image'
