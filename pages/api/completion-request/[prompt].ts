@@ -1,9 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import openai from '../../../openai-config/openai'
+// import { OpenAIStream } from "../../utils/OpenAIStream";
 
-export const config = {
-  runtime: "edge",
-};
+// export const config = {
+//   runtime: "edge",
+// };
 
 const getResponse = async(prompt: string) => {
   const modelId = process.env.FINE_TUNED_MODEL as string
@@ -12,7 +13,8 @@ const getResponse = async(prompt: string) => {
     model: modelId,
     prompt,
     temperature: .3,
-    max_tokens: 1200
+    max_tokens: 1200,
+    stream: true
   });
 };
 
