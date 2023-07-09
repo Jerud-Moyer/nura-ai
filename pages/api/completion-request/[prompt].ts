@@ -1,6 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import openai from '../../../openai-config/openai'
 
+export const config = {
+  runtime: "edge",
+};
+
 const getResponse = async(prompt: string) => {
   const modelId = process.env.FINE_TUNED_MODEL as string
   console.log('model => ', modelId)
