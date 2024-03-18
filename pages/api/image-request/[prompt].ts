@@ -2,7 +2,8 @@ import { NextApiRequest, NextApiResponse } from "next"
 import openai from '../../../openai-config/openai'
 
 const getImage = async(prompt: string) => {
-  return await openai.createImage({
+  return await openai.images.generate({
+    model: 'dall-e-3',
     prompt,
     // n: 5,
     size: '1024x1024'
@@ -14,7 +15,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const prompt = req.query.prompt as string
-  console.log('prompt => ', prompt)
+  
   try {
     const response = await getImage(prompt)
     console.log('response => ', response.data)

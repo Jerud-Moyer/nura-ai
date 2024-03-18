@@ -25,7 +25,7 @@
 /* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: transparent #fff;
+  scrollbar-color: DimGray transparent;
 }
 
 /* Chrome, Edge, and Safari */
@@ -35,7 +35,7 @@
 }
 
 *::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, .3);
+  background: rgba(0, 0, 0, .3)!important;
   border-radius: 5px;
 }
 
@@ -102,12 +102,15 @@ h6 {
 pre, code {
   background-color: #4b5563;
   border-radius: 5px;
-  padding: 2px
+  padding: 2px;
 }
 pre {
   padding: 5px;
   margin-bottom: 10px;
   box-shadow: inset 0px 0px 4px black;
+  max-width: 100%;
+  overflow: scroll;
+  scrollbar-color: gray transparent;
 }
 p > code {
   color: #21a5d9
