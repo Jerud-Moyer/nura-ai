@@ -31,7 +31,8 @@ interface Props {
   error: string,
   handleCloseWindow: () => void,
   handleSubmit: () => void,
-  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
+  handleKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => void
 }
 
 export default function MagicWindow(props: Props) {
@@ -50,7 +51,8 @@ export default function MagicWindow(props: Props) {
     error,
     handleCloseWindow,
     handleSubmit,
-    handleChange
+    handleChange,
+    handleKeyPress
   } = props
   
   const [tempPrompt, setTempPrompt] = useState<string>('')
@@ -82,6 +84,13 @@ export default function MagicWindow(props: Props) {
     setTempPrompt('')
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if(e.key === 'Enter') {
+      handleKeyPress(e)
+      setTempPrompt('')
+    }
+  } 
+
   const buildABubble = (
     message: ChatRequestMessage,
     i: number = 0
@@ -92,7 +101,7 @@ export default function MagicWindow(props: Props) {
     const ChatBubble = styled(Paper)(({ theme }) => ({
       backgroundColor: isUser ? '#21a5d9' : '#d66b02',
       textAlign: isUser ? 'right' : 'left',
-      maxWidth: 'fit-content',
+      maxWidth: '100%',
       padding: '10px 15px',
       borderRadius: '14px',
       alignSelf: isUser ? 'end' : 'start',
@@ -202,6 +211,7 @@ export default function MagicWindow(props: Props) {
               variant='outlined'
               label='prompt'
               onChange={handlePrompt}
+              onKeyDown={handleKeyDown}
               value={tempPrompt}
               InputProps={{
                 endAdornment: <InputAdornment

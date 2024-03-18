@@ -1,10 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 import Image, { StaticImageData } from 'next/image'
 import { Inter } from 'next/font/google'
-import { Button, Tab, Tabs, TextField, Stack, Paper, Dialog } from '@mui/material'
+import { Button, Tab, Tabs, TextField, Stack, Paper, Dialog, Icon, Tooltip } from '@mui/material'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useInterval } from '@/hooks/useInterval'
-import { ChatCompletionRequestMessage } from 'openai'
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 import { ChatRequestMessage } from '@/types'
 import MagicWindow from '@/components/MagicWindow'
 
@@ -45,6 +45,7 @@ export default function Home() {
 
 
   const systemMessageContent: string = process.env.NEXT_PUBLIC_SYSTEM_MESSAGE as string
+  const wisdomPrepromp: string = process.env.NEXT_PUBLIC_WISDOM_PRE_PROMPT as string
   
  const systemMessage = useMemo(() => ({
     role: 'system',
@@ -94,14 +95,18 @@ export default function Home() {
   const handleCloseMagicWindow = (): void => {
     manageBlinkOut()
     setChatMessages([systemMessage])
+    setWisdom('')
     setImageSource('')
     setError('')
   }
 
- // const magicBackground = ''  todo set this up
-
   const handlePromptChange = (e:React.ChangeEvent<HTMLInputElement>): void => {
     setPrompt(e.target.value)
+  }
+  
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    console.log('event key? => ', e)
+    if(e.key === 'Enter') handleChatSubmit()
   }
 
   const handleWishTypeChange = (e: React.SyntheticEvent, newVal: number) => {
@@ -120,7 +125,7 @@ export default function Home() {
   }, !hasContent && (loading || welcome) ? 100 : 0)
 
   const getBackgroundImage = () => {
-    const imageIdx = Math.floor(Math.random() * 22) + 1
+    const imageIdx = Math.floor(Math.random() * 19) + 1
     const newImageUrl = `${preImageUrl}nura_${imageIdx}`
     setMagicBackground(newImageUrl)
   }
@@ -129,27 +134,50 @@ export default function Home() {
     getBackgroundImage()
     setBackgroundSize(100)
     setLoading(true)
-    fetch(`/api/completion-request/${prompt} ->`)
-      .then(res => res.json())
+
+    console.log('prompt on front => ', prompt)
+    fetch(`/api/completion-request`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'applicaton/json'
+      },
+      body: JSON.stringify({
+        prompt: `${wisdomPrepromp}${prompt}`
+      })
+    })
       .then(res => {
-        if(!res.error) {
-          console.log('res after calling JSON ', res)
-          setWisdom(res.choices[0].text)
-        } else if(res.error) {
-          setError(`a ${res.error.code} error has occurred - ${res.error.message}`)
-        } else {
-          console.log('why the error? ', res)
-          setError(`a ${res.status} error has occurred - ${res.statusText}`)
+        if(!res.ok) {
+          console.error(`ERROR => ${res.statusText}`)
+          throw new Error(res.statusText)
         }
-      }).finally(() => {
+
+        const data = res.body
+        if(!data) {
+          return
+        }
+        const reader = data.getReader()
+        const decoder = new TextDecoder()
+        let done = false
+        let counter = 0
+
         setHasContent(true)
         setLoading(false)
+
+        while(!done && counter < 1001) {
+          counter ++
+          
+          reader.read()
+            .then(({ value, done: doneReading }) => {
+              done = doneReading
+              const chunkValue = decoder.decode(value) 
+              setWisdom(prev => prev + chunkValue)
+            })
+        }
       })
   }
 
   
   const handleChatSubmit = (attempts: number = 0): void => {  
-    console.log('chat submit')
     const newMessage = {role: 'user', content: prompt}
     const messages = [...chatMessages, newMessage]
     setLoading(true)
@@ -168,7 +196,7 @@ export default function Home() {
               setChatMessages([
                 ...chatMessages,
                 newMessage,
-                res.choices[0].message as ChatCompletionRequestMessage
+                res[0].message
               ])
             })
             .finally(() => {
@@ -196,14 +224,11 @@ export default function Home() {
       .then(res => res.json())
       .then(res => {
         if(!res.error) {
-              console.log('res after calling JSON ', res)
               if(wishType === 2) {
                 // only if multi image reinstated!
-                console.log('wishtype 2? ', wishType)
-                setMultiImageSources(res.data)
+                setMultiImageSources(res)
               } else {
-                console.log('oooor not ', wishType)
-                setImageSource(res.data[0].url)
+                setImageSource(res[0].url)
               }
         } else if(res.error) {
           setError(`a ${res.error.code} error has occurred - ${res.error.message}`)
@@ -277,7 +302,7 @@ export default function Home() {
               About Nura
             </p>
             <p className='text-nura_blue my-2'>
-              Nura came about quite simply as an exploration into OpenAI&rsquo;s API. The Wisdom function is built on a custom fine-tuned version of the Davinci model, while conversation utilizes the same GPT-3-turbo model as Chat-GPT. The Imagery comes courtesy of the DALL-E imaging model. 
+              Nura came about quite simply as an exploration into OpenAI&rsquo;s API. The <span className='text-blaze'>WISDOM</span> mode utilizes GPT-3.5-turbo-instruct and prompt engineering do deliver a singular answer to a given prompt. Best thought of as the philosopher-mode of Nura, Wisdom produces sometimes whimsical answers to a user&rsquo;s questions. <span className='text-blaze'>CONVERSATION</span> utilizes GPT-3.5-turbo model and is designed for chat. Conversation should present a similar persona as Wisdom but can be counted on for providing better responses to real world questions, so for anything regarding code or the sciences, for example, it would be the better option.&nbsp; <span className='text-blaze'>IMAGERY</span> comes courtesy of the DALL-E-3 imaging model. 
             </p>
             <p className='text-nura_blue'>
               As a developer I wanted to utilize Nura&rsquo;s abilities as much as possible during the development process. All images in the app where created by Nura, it helped me through a couple of interesting coding problems, and it even named itself.
@@ -315,8 +340,13 @@ export default function Home() {
         <p className='text-6xl text-blaze text-center mb-20 main-nura'>
           NURA
         </p>
-        <p className='text-center text-gray-200 mb-3'>
-          Select a type of wish
+        <p className='text-center mb-3 text-blaze relative -translate-x-3'>
+          Select a type of wish &nbsp;
+          <Tooltip title='see ABOUT NURA for info.' placement='top'>
+            <span className='absolute -top-[2px] -translate-x-[2px] scale-80'>
+              <HelpOutlineIcon text-size='small' />
+            </span>
+          </Tooltip>
         </p>
         <Tabs value={wishType} onChange={handleWishTypeChange}>
           <Tab label='wisdom'/>
@@ -326,7 +356,7 @@ export default function Home() {
         </Tabs>
         <div className='mt-12 w-[500px] max-w-[90vw]'>
           <TextField
-            label='Enter your Wish'
+            label='Enter a prompt for your wish'
             multiline
             variant='outlined'
             fullWidth
@@ -334,7 +364,7 @@ export default function Home() {
             onChange={handlePromptChange}
           />
         </div>
-        <p className='mt-12'>
+        <p className='mt-12 text-blaze'>
           ask Nura for {wishTypes[wishType]}
         </p>
         <div className='mt-3'>
@@ -367,16 +397,17 @@ export default function Home() {
             handleCloseWindow={handleCloseMagicWindow}
             handleSubmit={handleChatSubmit}
             handleChange={handlePromptChange}
+            handleKeyPress={handleKeyPress}
           />
           {blinkOut &&
             <>
               <div className={`
-                absolute top-[50%] h-[1px] w-[1px] border border-color-blaze shadow-md shadow-bright_light
+                absolute top-[55%] h-[1px] w-[1px] border border-color-blaze shadow-md shadow-bright_light
                 ${blinkOut ? 'animate-flare_x' : ''}
               `}>
               </div>
               <div className={`
-                absolute top-[50%] h-[2px] w-[1px] border border-color-blaze shadow-md shadow-bright_light
+                absolute top-[45%] h-[2px] w-[1px] border border-color-blaze shadow-md shadow-bright_light
                 ${blinkOut ? 'animate-flare_y' : ''}
               `}>
               </div> 
