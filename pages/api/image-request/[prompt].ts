@@ -15,7 +15,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const prompt = req.query.prompt as string
-  
+  console.log('do we get the prompt => ', prompt)
   try {
     const response = await getImage(prompt)
     console.log('response => ', response.data)
