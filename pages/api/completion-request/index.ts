@@ -6,18 +6,6 @@ export const config = {
   runtime: "edge",
 };
 
-// const getResponse = async(prompt: string) => {
-//   const modelId = process.env.FINE_TUNED_MODEL as string
-//   console.log('model => ', modelId)
-//   return await openai.createCompletion({
-//     model: modelId,
-//     prompt,
-//     temperature: .3,
-//     max_tokens: 1200,
-//     stream: true
-//   });
-// };
-
 export default async function handler(
   req: Request,
   res: NextApiResponse
@@ -42,9 +30,6 @@ export default async function handler(
   }
 
   try{
-    // const response =  await getResponse(prompt)
-    // console.log('response => ', response.data.choices)
-    // res.send(response.data)
     const stream = await OpenAIStream(payload)
     return new Response(stream)
   } catch(error: any) {
