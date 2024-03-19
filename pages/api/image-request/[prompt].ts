@@ -1,6 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import openai from '../../../openai-config/openai'
 
+export const config = {
+  runtime: "edge",
+};
+
 const getImage = async(prompt: string) => {
   return await openai.images.generate({
     model: 'dall-e-3',
