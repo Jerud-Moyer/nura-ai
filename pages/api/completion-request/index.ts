@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import openai from '../../../openai-config/openai'
 import { OpenAIStream } from "../../../utils/openAIStream";
+import { NextResponse } from "next/server";
 
 export const config = {
   runtime: "edge",
@@ -10,7 +11,6 @@ export default async function handler(
   req: Request,
   res: NextApiResponse
 ) {
-  // const oldPrompt = req.query.prompt as string
   const { prompt } = (await req.json()) as {
     prompt: string
   }
@@ -34,11 +34,11 @@ export default async function handler(
     return new Response(stream)
   } catch(error: any) {
     if(error.response) {
-      console.log('error here => ', error.response)
-      res.send(error.response.data)
+      console.log('error => ', error.response)
+      return NextResponse.json(error.response.data)
     } else {
       console.log('error => ', error)
-      res.send(error)
+      return NextResponse.json(error)
     }
   }
 }
