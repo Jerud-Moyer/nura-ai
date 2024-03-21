@@ -1,6 +1,5 @@
 import openai from "@/openai-config/openai"
 import { createParser, ParsedEvent, ReconnectInterval } from "eventsource-parser"
-// import { CreateCompletionRequest } from "openai"
 
 export async function OpenAIStream(payload: any) {
   const encoder = new TextEncoder()
@@ -8,7 +7,6 @@ export async function OpenAIStream(payload: any) {
 
   let counter = 0
 
-  // const res = await openai.createCompletion(payload)
   const res = await fetch('https://api.openai.com/v1/completions', {
     method: 'POST', 
     headers: {

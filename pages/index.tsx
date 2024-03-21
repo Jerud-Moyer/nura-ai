@@ -220,10 +220,20 @@ export default function Home() {
     getBackgroundImage()
     setBackgroundSize(100)
     setLoading(true)
-    fetch(`/api/image-request/${prompt}`)
-      .then(res => res.json())
+    fetch(`/api/image-request/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(prompt)
+    })
+      .then(res => {
+        console.log('res before json => ', res)
+        return res.json()
+      })
       .then(res => {
         if(!res.error) {
+          console.log('we get here then? ', res)
               if(wishType === 2) {
                 // only if multi image reinstated!
                 setMultiImageSources(res)
@@ -231,8 +241,10 @@ export default function Home() {
                 setImageSource(res[0].url)
               }
         } else if(res.error) {
+          console.log('error front A => ', res)
           setError(`a ${res.error.code} error has occurred - ${res.error.message}`)
         } else {
+          console.log('error fron B => ', res)
           setError(`a ${res.status} error has occured. - ${res.statusText} - please try again`)
         }
       }).finally(() => {
