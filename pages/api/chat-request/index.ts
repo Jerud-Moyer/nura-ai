@@ -5,7 +5,7 @@ import openai from '../../../openai-config/openai'
 const getResponse = async(messages: any) => {
   if(messages) {
     const res = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-4o',
       temperature: .2,
       messages: messages
     });
