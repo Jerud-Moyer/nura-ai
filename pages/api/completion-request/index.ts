@@ -15,7 +15,7 @@ export default async function handler(
     prompt: string
   }
 
-  console.log('prompt => ', prompt)
+  // console.log('prompt => ', prompt)
 
   const payload = {
     // model: process.env.FINE_TUNED_MODEL as string,

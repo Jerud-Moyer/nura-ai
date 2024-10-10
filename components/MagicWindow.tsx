@@ -4,8 +4,10 @@ import {
   InputAdornment,
   Paper, 
   Stack, 
-  TextField 
+  TextField,
+  Button
 } from "@mui/material";
+import LoadingButton from '@mui/lab/LoadingButton';
 import { styled } from "@mui/system";
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 import HighlightOffTwoToneIcon from '@mui/icons-material/HighlightOffTwoTone';
@@ -15,6 +17,8 @@ import React, {
   useState 
 } from "react";
 import MarkDownContent from "./MarkDownReader";
+import { getTTS } from "@/utils/api";
+import { useAudio } from "@/hooks/useAudio";
 
 interface Props {
   blinkOut: boolean,
@@ -57,9 +61,11 @@ export default function MagicWindow(props: Props) {
   
   const [tempPrompt, setTempPrompt] = useState<string>('')
   const [showCloseIcon, setShowCloseIcon] = useState<boolean>(true)
+  const [ttsLoading, setTtsLoading] = useState<boolean>(false)
   const chatScrollRef = useRef<HTMLDivElement | null>(null)
   const imageRef = useRef<HTMLImageElement | null>(null)
   const hasError: boolean = error.length > 0
+  const audioPlayer = useAudio()
 
   useEffect(() => {
     if(chatScrollRef.current) {
@@ -90,6 +96,26 @@ export default function MagicWindow(props: Props) {
       setTempPrompt('')
     }
   } 
+
+  const handleTTS = (): void => {
+    let text: string = ''
+
+    setTtsLoading(true)
+    
+    if(wishType == 'Conversation') {
+      text = chatMessages[chatMessages.length - 1].content
+    } else if(wishType == 'Wisdom') {
+      text = wisdom
+    }
+
+    if(text.length) {
+      getTTS(text)
+        .then(mp3 => {
+          audioPlayer.playAudio(mp3)
+          setTtsLoading(false)
+        })
+    }
+  }
 
   const buildABubble = (
     message: ChatRequestMessage,
@@ -207,6 +233,16 @@ export default function MagicWindow(props: Props) {
                 <div ref={chatScrollRef}></div>
               </div>
             }
+            <div className="relative flex justify-center w-full my-2">
+              <LoadingButton
+                size='small'
+                variant='contained'
+                onClick={handleTTS}
+                loading={ttsLoading}
+              >
+                hear the voice of nura
+              </LoadingButton>
+            </div>
             <TextField
               variant='outlined'
               label='prompt'
@@ -228,13 +264,25 @@ export default function MagicWindow(props: Props) {
         }
 
         {wishType === 'Wisdom' &&
-        <div className="min-h-full flex flex-col justify-center">
+        <>
+        <div className="min-h-[90%] flex flex-col justify-center">
           <WisdomBubble>
             <MarkDownContent 
               content={wisdom}
             />
           </WisdomBubble>
         </div>
+        <div className="relative flex justify-center w-full mt-4">
+          <LoadingButton
+            size='small'
+            variant='contained'
+            onClick={handleTTS}
+            loading={ttsLoading}
+          >
+            hear the voice of nura
+          </LoadingButton>
+        </div>
+        </>
         }
 
         {wishType === 'Imagery' && !blinkOut && hasContent &&
