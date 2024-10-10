@@ -135,7 +135,7 @@ export default function Home() {
     setBackgroundSize(100)
     setLoading(true)
 
-    console.log('prompt on front => ', prompt)
+    // console.log('prompt on front => ', prompt)
     fetch(`/api/completion-request`, {
       method: 'POST',
       headers: {
