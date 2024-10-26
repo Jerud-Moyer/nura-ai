@@ -7,6 +7,7 @@ import { useInterval } from '@/hooks/useInterval'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 import { ChatRequestMessage } from '@/types'
 import MagicWindow from '@/components/MagicWindow'
+import { getChat, getCompletion, getImage } from '@/utils/api'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -135,16 +136,7 @@ export default function Home() {
     setBackgroundSize(100)
     setLoading(true)
 
-    // console.log('prompt on front => ', prompt)
-    fetch(`/api/completion-request`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'applicaton/json'
-      },
-      body: JSON.stringify({
-        prompt: `${wisdomPrepromp}${prompt}`
-      })
-    })
+    getCompletion(`${wisdomPrepromp}${prompt}`)
       .then(res => {
         if(!res.ok) {
           console.error(`ERROR => ${res.statusText}`)
@@ -182,13 +174,8 @@ export default function Home() {
     const messages = [...chatMessages, newMessage]
     setLoading(true)
     if (messages.length === 2) getBackgroundImage()
-    fetch(`/api/chat-request/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(messages)
-    })
+    
+    getChat(messages)
       .then(res => {
         if(res.ok) {
           res.json()
@@ -220,17 +207,8 @@ export default function Home() {
     getBackgroundImage()
     setBackgroundSize(100)
     setLoading(true)
-    fetch(`/api/image-request/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(prompt)
-    })
-      .then(res => {
-        console.log('res before json => ', res)
-        return res.json()
-      })
+    
+    getImage(prompt)
       .then(res => {
         if(!res.error) {
           console.log('we get here then? ', res)
