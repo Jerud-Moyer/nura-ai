@@ -95,8 +95,6 @@ export function useAudio() {
   }, [])
 
   return {
-    audioRef,
-    createAudioSource,
     playAudio
   }
 
