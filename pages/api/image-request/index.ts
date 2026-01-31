@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import openai from '../../../openai-config/openai'
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export const config = {
   runtime: "edge",
@@ -16,10 +16,11 @@ const getImage = async(prompt: string) => {
 }
 
 export default async function handler(
-  req: Request,
-  res: NextApiResponse
+  req: NextRequest,
+  res: NextResponse
 ) {
   const prompt = (await req.json()) as string
+  // const prompt = req.body
   console.log('prompt server side => ', prompt)
   try {
     const response = await getImage(prompt)
