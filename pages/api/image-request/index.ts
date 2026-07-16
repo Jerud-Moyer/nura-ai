@@ -11,6 +11,7 @@ const getImage = async(prompt: string) => {
     model: 'gpt-image-2',
     prompt,
     // n: 5,
+    // moderation: 'low',
     size: '1024x1024'
   })
 }

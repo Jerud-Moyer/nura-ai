@@ -216,7 +216,13 @@ export default function Home() {
                 // only if multi image reinstated!
                 setMultiImageSources(res)
               } else {
-                setImageSource(res[0].url)
+                console.log('THE RESSSS => ', res)
+                const b64 = res[0].b64_json.replace(/\s/g, "")
+                const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+                const blob = new Blob([bytes], { type: "image/png" });
+                const url = URL.createObjectURL(blob);
+
+                setImageSource(url)
               }
         } else if(res.error) {
           console.log('error front A => ', res)
