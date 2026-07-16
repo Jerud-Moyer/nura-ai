@@ -33,7 +33,7 @@ export const getImage = async(prompt: string): Promise<any> => {
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(prompt)
+    body: JSON.stringify({prompt})
   })
 
   return await res.json()
