@@ -1,5 +1,4 @@
-import { NextApiRequest, NextApiResponse } from "next"
-import openai from '../../../openai-config/openai'
+import { NextApiResponse } from "next"
 import { OpenAIStream } from "../../../utils/openAIStream";
 import { NextResponse } from "next/server";
 
@@ -15,10 +14,8 @@ export default async function handler(
     prompt: string
   }
 
-  // console.log('prompt => ', prompt)
 
   const payload = {
-    // model: process.env.FINE_TUNED_MODEL as string,
     model: 'gpt-3.5-turbo-instruct',
     prompt,
     temperature: 1,
@@ -34,10 +31,10 @@ export default async function handler(
     return new Response(stream)
   } catch(error: any) {
     if(error.response) {
-      console.log('error => ', error.response)
+      console.error('error => ', error.response)
       return NextResponse.json(error.response.data)
     } else {
-      console.log('error => ', error)
+      console.error('error => ', error)
       return NextResponse.json(error)
     }
   }

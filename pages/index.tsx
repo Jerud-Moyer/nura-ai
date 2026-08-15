@@ -196,7 +196,6 @@ export default function Home() {
             handleChatSubmit(attempts + 1)
           } else {
             res.json()
-            console.log('why the error? ', res)
             setError(`a ${res.status} error has occurred - ${res.statusText}`)
           }
         }
@@ -211,12 +210,10 @@ export default function Home() {
     getImage(prompt)
       .then(res => {
         if(!res.error) {
-          console.log('we get here then? ', res)
               if(wishType === 2) {
                 // only if multi image reinstated!
                 setMultiImageSources(res)
               } else {
-                console.log('THE RESSSS => ', res)
                 const b64 = res[0].b64_json.replace(/\s/g, "")
                 const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
                 const blob = new Blob([bytes], { type: "image/png" });
@@ -298,7 +295,7 @@ export default function Home() {
               About Nura
             </p>
             <p className='text-nura_blue my-2'>
-              Nura came about quite simply as an exploration into OpenAI&rsquo;s API. The <span className='text-blaze'>WISDOM</span> mode utilizes GPT-3.5-turbo-instruct and prompt engineering do deliver a singular answer to a given prompt. Best thought of as the philosopher-mode of Nura, Wisdom produces sometimes whimsical answers to a user&rsquo;s questions. <span className='text-blaze'>CONVERSATION</span> utilizes GPT-3.5-turbo model and is designed for chat. Conversation should present a similar persona as Wisdom but can be counted on for providing better responses to real world questions, so for anything regarding code or the sciences, for example, it would be the better option.&nbsp; <span className='text-blaze'>IMAGERY</span> comes courtesy of the DALL-E-3 imaging model. 
+              Nura came about quite simply as an exploration into OpenAI&rsquo;s API. The <span className='text-blaze'>WISDOM</span> mode utilizes specific configurations and prompt engineering do deliver a singular answer to a given prompt. Best thought of as the philosopher-mode of Nura, Wisdom produces sometimes whimsical answers to a user&rsquo;s questions. <span className='text-blaze'>CONVERSATION</span> is designed for chat. Conversation should present a similar persona as Wisdom but can be counted on for providing better responses to real world questions, so for anything regarding code or the sciences, for example, it would be the better option.&nbsp; <span className='text-blaze'>IMAGERY</span> comes courtesy of the DALL-E-3 imaging model. 
             </p>
             <p className='text-nura_blue'>
               As a developer I wanted to utilize Nura&rsquo;s abilities as much as possible during the development process. All images in the app where created by Nura, it helped me through a couple of interesting coding problems, and it even named itself.

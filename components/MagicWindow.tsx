@@ -5,7 +5,6 @@ import {
   Paper, 
   Stack, 
   TextField,
-  Button
 } from "@mui/material";
 import LoadingButton from '@mui/lab/LoadingButton';
 import { styled } from "@mui/system";
@@ -85,7 +84,6 @@ export default function MagicWindow(props: Props) {
   }
 
   const handlePromptSubmit = (): void => {
-    // getBackgroundImage()
     handleSubmit()
     setTempPrompt('')
   }
